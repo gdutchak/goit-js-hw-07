@@ -11,13 +11,41 @@ function createItemOfGallery(item) {
     data-source="${item.original}"alt="${item.description}"/></a>`
     }).join('')
 }
+galleryRef.addEventListener('click', openModalImg)
 
-galleryRef.addEventListener('click', (event) => {
-    event.preventDefault()
-    const instance = basicLightbox.create(`
+const instance = basicLightbox.create(`
     <div class="modal">
-       <img src="${event.target.dataset.source}" width="800" height="600">
+       <img src="" width="800" height="600">
     </div>
-`).show()
-})
+`,
+    {
+        onShow: (instance) => {
+            window.addEventListener('keydown', onEscCode)
+        }
+        ,
+
+        onClose: (instance) => {
+            window.removeEventListener('keydown', onEscCode)
+        }
+    });
+
+function openModalImg(event) {
+    event.preventDefault()
+    if (event.target.nodeName !== "IMG") {
+        return
+    }
+    instance.element().querySelector('img').src = event.target.dataset.source
+    instance.show()
+
+}
+
+function onEscCode(event) {
+    if (event.code === "Escape") {
+        instance.close()
+        return
+    }
+}
+
+
+
 
